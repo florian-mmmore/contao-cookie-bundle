@@ -1,0 +1,32 @@
+{
+  "name": "contao-cookie-bundle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^9.8.4",
+    "postcss-cli": "^7.1.1",
+    "uglifycss": "0.0.29"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prefix-css": "postcss src/Resources/public/css/cookie.css --no-map --replace",
+    "uglify-css": "uglifycss src/Resources/public/css/cookie.css --output src/Resources/public/css/cookie.min.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dreibein/contao-cookie-bundle.git"
+  },
+  "author": "Agentur Dreibein GmbH",
+  "license": "LGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/dreibein/contao-cookie-bundle/issues"
+  },
+  "homepage": "https://github.com/dreibein/contao-cookie-bundle#readme",
+  "browserslist": [
+    "last 2 versions",
+    "> 5%",
+    "IE 11"
+  ]
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>cookie.required</source>
+                <target>Required Cookies</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>cookie.functional</source>
+                <target>Functional Cookies</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>cookie.marketing</source>
+                <target>Marketing Cookies</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>submit.custom</source>
+                <target>Confirm my selection</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>submit.all</source>
+                <target>Accept and allow all</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>link.dataprotection</source>
+                <target>Data protection</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>link.imprint</source>
+                <target>Imprint</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

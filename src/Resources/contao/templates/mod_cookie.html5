@@ -1,0 +1,38 @@
+<div class="cookie-banner cookie-hidden<?php if ($this->hideCookieBanner): ?> js-cookie-hide<?php endif; ?>">
+    <div class="cookie-banner-container">
+        <form name="cookieForm" class="cookie-banner-form">
+            <div class="cookie-content-container">
+                <div class="headline-container">
+                    <?php if ($this->headline): ?>
+                        <<?= $this->hl ?>><?= $this->headline ?></<?= $this->hl ?>>
+                    <?php endif; ?>
+                </div>
+                <div class="description-container">
+                    <?= $this->text ?>
+                </div>
+                <div class="cookie-links">
+                    <a href="<?= $this->dataProtectionPage ?>" title="{{trans::link.dataprotection::dreibein_cookie}}" target="_blank">{{trans::link.dataprotection::dreibein_cookie}}</a>
+                    <a href="<?= $this->imprintPage ?>" title="{{trans::link.imprint::dreibein_cookie}}" target="_blank">{{trans::link.imprint::dreibein_cookie}}</a>
+                </div>
+                <div class="cookie-settings">
+                    <div class="settings-checkbox settings-required">
+                        <input id="cookieCheckRequired" type="checkbox" name="required" value="1" checked="checked" disabled="disabled">
+                        <label for="cookieCheckRequired">{{trans::cookie.required::dreibein_cookie}}</label>
+                    </div>
+                    <div class="settings-checkbox settings-functional">
+                        <input id="cookieCheckFunctional" type="checkbox" name="functional" value="">
+                        <label for="cookieCheckFunctional">{{trans::cookie.functional::dreibein_cookie}}</label>
+                    </div>
+                    <div class="settings-checkbox settings-marketing">
+                        <input id="cookieCheckMarketing" type="checkbox" name="marketing" value="">
+                        <label for="cookieCheckMarketing">{{trans::cookie.marketing::dreibein_cookie}}</label>
+                    </div>
+                </div>
+                <div class="submit-container">
+                    <button type="submit" class="cookie-custom">{{trans::submit.custom::dreibein_cookie}}</button>
+                    <button type="submit" class="cookie-all">{{trans::submit.all::dreibein_cookie}}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,282 @@
+<?php
+// Add the cookie style sheet
+$GLOBALS['TL_CSS'][] = '/bundles/dreibeincookie/css/cookie.min.css|static';
+?>
+
+<script type="text/javascript">
+    (function () {
+        var storageKey = 'cookieSelection';
+        var cookieForm = document.cookieForm;
+        var formSubmitter = null;
+        var functionalCookies = {};
+        var marketingCookies = {
+            /*
+            // Google Analytics
+            '_gcl_au': '<GoogleAnalytics::URL>',
+            '_gid': '<GoogleAnalytics::URL>',
+            '_gat': '<GoogleAnalytics::URL>',
+            '_ga': '<GoogleAnalytics::URL>',
+            '_gat_UA-XXXXX-X': '<GoogleAnalytics::URL>',
+            */
+            /*
+            // Matomo Cookies
+            'MATOMO_SESSID': '<Matomo::URL>',
+            'piwik_ignore': '<Matomo::URL>',
+            'mtm_consent': '<Site::URL>',
+            'mtm_consent_removed': '<Site::URL>',
+            */
+        };
+
+        var loadRequiredCookies = function () {
+        }
+
+        var loadFunctionalCookies = function () {
+        }
+
+        var loadMarketingCookies = function () {
+            // activate google analytics tracking
+            // loadGoogleAnalytics();
+
+            // activate matomo tracking
+            // loadMatomo();
+        }
+
+        var loadGoogleAnalytics = function () {
+            window.ga = window.ga || function () {
+                (ga.q = ga.q || []).push(arguments)
+            };
+            ga.l = +new Date;
+            ga('create', 'UA-XXXXX-X', 'auto');
+            ga('set', 'anonymizeIp', true);
+            ga('send', 'pageview');
+            var gascript = document.createElement('script');
+            gascript.async = true;
+            gascript.src = 'https://www.google-analytics.com/analycits.js';
+            document.getElementsByTagName('head')[0].appendChild(gascript);
+        }
+
+        var loadMatomo = function () {
+            window._paq = window._paq || [];
+            /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+            window._paq.push(['trackPageView']);
+            window._paq.push(['enableLinkTracking']);
+
+            var u = '<Matomo::URL>';
+            window._paq.push(['setTrackerUrl', u + 'matomo.php']);
+            window._paq.push(['setSiteId', '<Matomo::SideId>']);
+            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+            g.type = 'text/javascript';
+            g.async = true;
+            g.defer = true;
+            g.src = u + 'matomo.js';
+            s.parentNode.insertBefore(g, s);
+        }
+
+        var loadCookies = function (cookieLoads) {
+            // call the selected cookie load functions
+            cookieLoads.forEach(function (fnc) {
+                fnc();
+            });
+
+            toggleVisibility(false);
+        }
+
+        // show or hide the cookie banner
+        var toggleVisibility = function (visible) {
+            var cookieContainer = document.querySelector('.cookie-banner');
+
+            if (!cookieContainer) {
+                return;
+            }
+
+            // class that is set if the current page is imprint oder data protection
+            if (cookieContainer.classList.contains('js-cookie-hide')) {
+                return;
+            }
+
+            if (visible) {
+                cookieContainer.classList.remove('cookie-hidden');
+            } else {
+                cookieContainer.classList.add('cookie-hidden');
+            }
+        }
+
+        // save the selection in the session storage
+        var saveSelection = function (selection) {
+            var cookies = document.cookie.split('; ');
+            var value = '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/; domain=';
+
+            // remove functional cookies
+            if (selection.indexOf('functional') === -1) {
+                cookies.forEach(function (cookieValue) {
+                    var cookie = cookieValue.split('=');
+                    if (functionalCookies[cookie]) {
+                        document.cookie = cookie + value + functionalCookies[cookie];
+                    }
+                });
+            }
+
+            // remove marketing cookies
+            if (selection.indexOf('marketing') === -1) {
+                cookies.forEach(function (cookieValue) {
+                    var cookie = cookieValue.split('=');
+                    if (marketingCookies[cookie]) {
+                        document.cookie = cookie + value + marketingCookies[cookie];
+                    }
+                });
+            }
+
+            window.sessionStorage.setItem(storageKey, selection);
+        }
+
+        // depending on the selection string load different cookie functions
+        var loadCookiesBySelection = function (selection) {
+            if (!selection) {
+                return;
+            }
+
+            var cookiesLoad = [loadRequiredCookies];
+            var selections = selection.split('__');
+            selections.forEach(function (type) {
+                if ('functional' === type) {
+                    cookiesLoad.push(loadFunctionalCookies);
+                }
+
+                if ('marketing' === type) {
+                    cookiesLoad.push(loadMarketingCookies);
+                }
+            });
+
+            loadCookies(cookiesLoad);
+        }
+
+        // Load the cookies by the value in the session storage
+        var loadFromStorage = function () {
+            var selection = window.sessionStorage.getItem(storageKey);
+
+            if (selection && selection.indexOf('required') !== -1) {
+                loadCookiesBySelection(selection);
+
+                // mark the checkboxes as checked
+                if (!cookieForm) {
+                    return;
+                }
+
+                if (selection.indexOf('functional') !== -1 && cookieForm.functional) {
+                    cookieForm.functional.checked = true;
+                }
+
+                if (selection.indexOf('marketing') !== -1 && cookieForm.marketing) {
+                    cookieForm.marketing.checked = true;
+                }
+            } else {
+                // show the banner
+                toggleVisibility(true);
+            }
+        }
+
+        // execute this function to check if the user has already submitted the desicion.
+        loadFromStorage();
+
+        // if the form could not be found, stop execution here
+        if (!cookieForm) {
+            return;
+        }
+
+        cookieForm.querySelector('.cookie-custom').addEventListener('click', function (e) {
+            formSubmitter = e.target;
+        });
+
+        cookieForm.querySelector('.cookie-all').addEventListener('click', function (e) {
+            formSubmitter = e.target;
+        });
+
+        // Submitting the form
+        cookieForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // init the variables
+            var cookieLoads = [];
+            var type = 'all';
+            var selection = 'required';
+
+            // the property submitter is not available in every browser
+            if (e.submitter) {
+                formSubmitter = e.submitter;
+            }
+
+            if (formSubmitter) {
+                var time = 500;
+                var timeFactor = 1;
+
+                cookieLoads.push(loadRequiredCookies);
+                if (formSubmitter.classList.contains('cookie-custom')) {
+                    type = 'custom';
+                }
+
+                switch (type) {
+                    case 'custom':
+                        // add the load functions depending on the submitted checkboxes
+                        if (cookieForm.functional && cookieForm.functional.checked) {
+                            cookieLoads.push(loadFunctionalCookies);
+                            selection += '__functional';
+                        }
+
+                        if (cookieForm.marketing && cookieForm.marketing.checked) {
+                            cookieLoads.push(loadMarketingCookies);
+                            selection += '__marketing';
+                        }
+                        break;
+                    case 'all':
+                        // select all checkboxes and add the selections to the load functions
+                        if (cookieForm.functional) {
+                            setTimeout(function () {
+                                cookieForm.functional.checked = true;
+                                cookieLoads.push(loadFunctionalCookies);
+                            }, timeFactor * time);
+                            timeFactor++;
+                        }
+
+                        if (cookieForm.marketing) {
+                            setTimeout(function () {
+                                cookieForm.marketing.checked = true;
+                                cookieLoads.push(loadMarketingCookies);
+                            }, timeFactor * time);
+                            timeFactor++;
+                        }
+
+                        selection = 'required__functional__marketing';
+                        break;
+                }
+
+                setTimeout(function () {
+                    saveSelection(selection);
+                    loadCookies(cookieLoads);
+                }, timeFactor * time);
+            }
+
+            formSubmitter = null;
+
+            return false;
+        });
+
+        // check if there is a link with href="#dataprivacy"
+        var allAnchors = document.getElementsByTagName('a');
+        // TODO: querySelectorAll
+        for (var i = 0; i < allAnchors.length; i++) {
+            if (allAnchors[i].href.indexOf('#dataprivacy') !== -1) {
+                allAnchors[i].addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    var cookieContainer = document.querySelector('.cookie-banner');
+
+                    cookieContainer.classList.remove('js-cookie-hide');
+
+                    toggleVisibility(true);
+
+                    return false;
+                });
+            }
+        }
+    })();
+</script>
